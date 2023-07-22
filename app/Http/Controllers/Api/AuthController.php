@@ -46,8 +46,8 @@ class AuthController extends Controller
 
     private function uploadBase64Image($image){
         $decoder = new Base64ImageDecoder($image, $allowedFormats = ['jpeg', 'png', 'jpg']);
-        $decodeContent = $decoder->getDecodeContent();
-        $format = $decoder->format();
+        $decodeContent = $decoder->getDecodedContent();
+        $format = $decoder->getFormat();
         $image = Str::random(10).'.'.$format;
         Storage::disk('public')->put($image,$decodeContent);
         return $image;
