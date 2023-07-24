@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Tymon\JWTAuth\Facades\JwtAuth;
+use Tymon\JwtAuth\Exeptions\JwtException;
 
 class AuthController extends Controller
 {
@@ -60,6 +62,26 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+        $validator = Validator::make($credentials, [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->messages()], 400);
+        }
+        try {
+            $token = JwtAuth::attempt($credentials);
+            if (!$token) {
+                return response()->json(['message' => 'login credentials are invalid']);
+            }
+            return $token;
+        } catch (\JwtExecption $th) {
+            return response()->json(['message' => $th->getMessage()],500);
         }
     }
     private function generateCardNumber($length)
