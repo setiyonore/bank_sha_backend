@@ -79,9 +79,13 @@ class AuthController extends Controller
             if (!$token) {
                 return response()->json(['message' => 'login credentials are invalid']);
             }
-            return $token;
+            $userResponse = getUser($request->email);
+            $userResponse->token = $token;
+            $userResponse->token_expires_in = auth()->factory()->getTTL() * 60;
+            $userResponse->token_type = 'bearer';
+            return response()->json($userResponse);
         } catch (\JwtExecption $th) {
-            return response()->json(['message' => $th->getMessage()],500);
+            return response()->json(['message' => $th->getMessage()], 500);
         }
     }
     private function generateCardNumber($length)
