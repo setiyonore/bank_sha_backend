@@ -58,6 +58,12 @@ class AuthController extends Controller
                 'card_number' => $this->generateCardNumber(16)
             ]);
             DB::commit();
+            $token = JwtAuth::attempt(['email'=>$request->email,'password'=>$request->password]);
+            $userResponse = getUser($request->email);
+            $userResponse->token = $token;
+            $userResponse->token_expires_in = auth()->factory()->getTTL() * 60;
+            $userResponse->token_type = 'bearer';
+            return response()->json($userResponse);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['message' => $th->getMessage()], 500);
