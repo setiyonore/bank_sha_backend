@@ -11,8 +11,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Tymon\JWTAuth\Facades\JwtAuth;
-use Tymon\JwtAuth\Exeptions\JwtException;
+use JWTAuth;
 
 class AuthController extends Controller
 {
